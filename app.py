@@ -1,5 +1,6 @@
 import sys
 import traceback
+import json
 from datetime import datetime
 from http import HTTPStatus
 
@@ -61,6 +62,24 @@ app = FastAPI()
 def healthcheck():
     # for https://cron-job.org/ to keep heroku alive
     return {"message": "I'm alive!"}
+
+@app.get("/sheet")
+def sheet():
+    import gspread
+    from oauth2client.service_account import ServiceAccountCredentials
+
+    scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+    # creds = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
+
+    service_account_info_dict = json.loads(CONFIG.GOOGLE_SERVICE_ACCOUNT, strict=False)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info_dict, scope)
+
+    client = gspread.authorize(creds)
+    sheet = client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")
+    questions =  sheet.col_values(1)
+    answers =  sheet.col_values(2)
+
+    return [questions,answers]
 
 
 @app.post("/api/messages")

@@ -75,8 +75,28 @@ async def messages(req: Request) -> Response:
     return Response(status=HTTPStatus.OK)
 
 
-APP = web.Application(middlewares=[aiohttp_error_middleware])
+async def healthcheck(req: Request) -> Response:
+    # for https://cron-job.org/ to keep heroku alive
+    return Response(status=HTTPStatus.OK)
+
+
+@web.middleware
+async def error_message_middleware(request, handler):
+    try:
+        response = await handler(request)
+        if response.status != 404:
+            return response
+        message = response.message
+    except web.HTTPException as ex:
+        if ex.status != 404:
+            raise
+        message = ex.reason
+    return web.json_response({'error': message})
+
+APP = web.Application(
+    middlewares=[aiohttp_error_middleware, error_message_middleware])
 APP.router.add_post("/api/messages", messages)
+APP.router.add_get("/healthcheck", healthcheck)
 
 if __name__ == "__main__":
     try:

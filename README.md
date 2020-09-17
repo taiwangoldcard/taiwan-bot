@@ -9,6 +9,6 @@ A chatbot to answer all your questions about [Taiwan Gold Card](https://taiwango
 ## Develop
 
 1. `pip install -r requirements.txt`
-2. `python app.py`
+2. `uvicorn app:app --reload`
 
 Test with [bot emulator](https://github.com/Microsoft/BotFramework-Emulator)

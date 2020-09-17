@@ -10,7 +10,6 @@ from botbuilder.core import (
     TurnContext,
     BotFrameworkAdapter,
 )
-from botbuilder.core.integration import aiohttp_error_middleware
 from botbuilder.schema import Activity, ActivityTypes
 
 from bots import EchoBot
@@ -94,7 +93,7 @@ async def error_message_middleware(request, handler):
     return web.json_response({'error': message})
 
 APP = web.Application(
-    middlewares=[aiohttp_error_middleware, error_message_middleware])
+    middlewares=[error_message_middleware])
 APP.router.add_post("/api/messages", messages)
 APP.router.add_get("/healthcheck", healthcheck)
 

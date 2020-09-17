@@ -1,6 +1,7 @@
 from botbuilder.core import ActivityHandler, MessageFactory, TurnContext
 from botbuilder.schema import ChannelAccount
 
+
 class EchoBot(ActivityHandler):
     async def on_members_added_activity(
         self, members_added: [ChannelAccount], turn_context: TurnContext
@@ -11,5 +12,6 @@ class EchoBot(ActivityHandler):
 
     async def on_message_activity(self, turn_context: TurnContext):
         return await turn_context.send_activity(
-            MessageFactory.text(f"Echo: {turn_context.activity.text}")
+            MessageFactory.text(
+                f"I'm echoing you: {turn_context.activity.text}")
         )

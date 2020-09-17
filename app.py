@@ -1,5 +1,6 @@
 import sys
 import traceback
+import json
 from datetime import datetime
 from http import HTTPStatus
 
@@ -68,7 +69,10 @@ def sheet():
     from oauth2client.service_account import ServiceAccountCredentials
 
     scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
+    # creds = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
+
+    service_account_info_dict = json.loads(CONFIG.GOOGLE_SERVICE_ACCOUNT, strict=False)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info_dict, scope)
 
     client = gspread.authorize(creds)
     sheet = client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")

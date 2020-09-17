@@ -10,3 +10,4 @@ class DefaultConfig:
     PORT = os.environ.get("PORT", 3978)
     APP_ID = os.environ.get("MICROSOFT_APP_ID", "")
     APP_PASSWORD = os.environ.get("MICROSOFT_APP_PASSWORD", "")
+    GOOGLE_SERVICE_ACCOUNT = os.environ.get("GOOGLE_SERVICE_ACCOUNT", "")

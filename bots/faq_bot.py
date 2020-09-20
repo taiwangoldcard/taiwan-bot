@@ -18,5 +18,6 @@ class FAQBot(ActivityHandler):
     async def on_message_activity(self, turn_context: TurnContext):
         return await turn_context.send_activity(
             MessageFactory.text(
-                f"I'm echoing you: {self.qa_model.find_best_answer(turn_context.activity.text)}")
+                self.qa_model.find_best_answer(turn_context.activity.text)
+            )
         )

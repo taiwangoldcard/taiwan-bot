@@ -12,8 +12,9 @@ from botbuilder.core import (
 from fastapi import FastAPI, Request, HTTPException
 from botbuilder.schema import Activity, ActivityTypes
 
-from bots import EchoBot
+from bots import FAQBot
 from config import DefaultConfig
+from models.nlp import QAModel
 
 CONFIG = DefaultConfig()
 
@@ -54,17 +55,7 @@ async def on_error(context: TurnContext, error: Exception):
 
 adapter.on_turn_error = on_error
 
-bot = EchoBot()
-app = FastAPI()
-
-
-@app.get("/healthcheck")
-def healthcheck():
-    # for https://cron-job.org/ to keep heroku alive
-    return {"message": "I'm alive!"}
-
-@app.get("/sheet")
-def sheet():
+def get_questions_answers():
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
 
@@ -76,10 +67,27 @@ def sheet():
 
     client = gspread.authorize(creds)
     sheet = client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")
-    questions =  sheet.col_values(1)
-    answers =  sheet.col_values(2)
+    questions =  list(map(str.strip, sheet.col_values(1)[1:]))
+    answers =  list(map(str.strip, sheet.col_values(2)[1:]))
 
     return [questions,answers]
+
+
+bot = FAQBot(
+    QAModel(get_questions_answers())
+)
+app = FastAPI()
+
+
+@app.get("/healthcheck")
+def healthcheck():
+    # for https://cron-job.org/ to keep heroku alive
+    return {"message": "I'm alive!"}
+
+
+@app.get("/sheet")
+def sheet():
+    return get_questions_answers()
 
 
 @app.post("/api/messages")

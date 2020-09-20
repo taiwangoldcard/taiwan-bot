@@ -14,7 +14,7 @@ from botbuilder.schema import Activity, ActivityTypes
 
 from bots import FAQBot
 from config import DefaultConfig
-from models.nlp import QAModel
+from models.nlp_lite import QAModelLite
 
 CONFIG = DefaultConfig()
 
@@ -74,7 +74,7 @@ def get_questions_answers():
 
 
 bot = FAQBot(
-    QAModel(get_questions_answers())
+    QAModelLite(get_questions_answers())
 )
 app = FastAPI()
 

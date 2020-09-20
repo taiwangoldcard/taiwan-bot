@@ -6,6 +6,10 @@ A chatbot to answer all your questions about [Taiwan Gold Card](https://taiwango
 
 ![Taiwan Bot line account](./line.png)
 
+## Add me on Messenger
+
+![Taiwan Bot messenger account](./messenger.png)
+
 ## Develop
 
 1. `pip install -r requirements.txt`

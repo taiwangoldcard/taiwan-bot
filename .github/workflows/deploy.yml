@@ -2,14 +2,18 @@ name: Deploy
 on:
   push:
     branches:
-      - master
+      - deploy
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.0.0
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "taiwan-bot"
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          config: ${{ secrets.SSH_CONFIG }}
+      - name: rsync over ssh
+        run: ./scripts/deploy.sh

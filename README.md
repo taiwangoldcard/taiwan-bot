@@ -19,4 +19,4 @@ Test with [bot emulator](https://github.com/Microsoft/BotFramework-Emulator)
 
 ## Deployment
 
-Everytime a PR is merged, the [github workflow](./github/workflows/deploy.yml) should automatically deploy the server to Heroku. The chatbot account above is connected to the server so your new changes should be instantly available.
+Everytime a PR is merged, the [github workflow](./github/workflows/deploy.yml) should automatically deploy the new server code. The chatbot account above is connected to the server so your new changes should be instantly available.

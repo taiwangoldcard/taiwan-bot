@@ -55,22 +55,26 @@ async def on_error(context: TurnContext, error: Exception):
 
 adapter.on_turn_error = on_error
 
+
 def get_questions_answers():
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
 
-    scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
     # creds = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
 
-    service_account_info_dict = json.loads(CONFIG.GOOGLE_SERVICE_ACCOUNT, strict=False)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info_dict, scope)
+    service_account_info_dict = json.loads(
+        CONFIG.GOOGLE_SERVICE_ACCOUNT, strict=False)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(
+        service_account_info_dict, scope)
 
     client = gspread.authorize(creds)
     sheet = client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")
-    questions =  list(map(str.strip, sheet.col_values(1)[1:]))
-    answers =  list(map(str.strip, sheet.col_values(2)[1:]))
+    questions = list(map(str.strip, sheet.col_values(1)[1:]))
+    answers = list(map(str.strip, sheet.col_values(2)[1:]))
 
-    return [questions,answers]
+    return [questions, answers]
 
 
 bot = FAQBot(
@@ -82,7 +86,7 @@ app = FastAPI()
 @app.get("/healthcheck")
 def healthcheck():
     # for https://cron-job.org/ to keep heroku alive
-    return {"message": "I'm alive!"}
+    return {"message": "I'm alive and well!"}
 
 
 @app.get("/sheet")

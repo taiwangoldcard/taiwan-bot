@@ -67,12 +67,12 @@ app = FastAPI()
 @app.get("/healthcheck")
 def healthcheck():
     # for https://cron-job.org/ to keep heroku alive
-    return {"message": "I'm alive and well!"}
+    return {"message": "I'm alive and well! Thank you!"}
 
 
 @app.get("/sheet")
 def sheet():
-    tbs.log_answers("what's up" , "my answer", 0.9)
+    tbs.log_answers("what's up", "my answer", 0.9)
 
     # return get_questions_answers()
 

@@ -59,7 +59,7 @@ adapter.on_turn_error = on_error
 tbs = TaiwanBotSheet()
 
 bot = FAQBot(
-    QAModelLite(tbs.get_questions_answers())
+    QAModelLite(tbs.get_questions_answers(), logger=tbs)
 )
 app = FastAPI()
 

@@ -15,6 +15,7 @@ from botbuilder.schema import Activity, ActivityTypes
 from bots import FAQBot
 from config import DefaultConfig
 from models.nlp_lite import QAModelLite
+from taiwan_bot_sheet import TaiwanBotSheet
 
 CONFIG = DefaultConfig()
 
@@ -55,30 +56,10 @@ async def on_error(context: TurnContext, error: Exception):
 
 adapter.on_turn_error = on_error
 
-
-def get_questions_answers():
-    import gspread
-    from oauth2client.service_account import ServiceAccountCredentials
-
-    scope = ['https://spreadsheets.google.com/feeds',
-             'https://www.googleapis.com/auth/drive']
-    # creds = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
-
-    service_account_info_dict = json.loads(
-        CONFIG.GOOGLE_SERVICE_ACCOUNT, strict=False)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(
-        service_account_info_dict, scope)
-
-    client = gspread.authorize(creds)
-    sheet = client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")
-    questions = list(map(str.strip, sheet.col_values(1)[1:]))
-    answers = list(map(str.strip, sheet.col_values(2)[1:]))
-
-    return [questions, answers]
-
+tbs = TaiwanBotSheet()
 
 bot = FAQBot(
-    QAModelLite(get_questions_answers())
+    QAModelLite(tbs.get_questions_answers())
 )
 app = FastAPI()
 
@@ -91,7 +72,9 @@ def healthcheck():
 
 @app.get("/sheet")
 def sheet():
-    return get_questions_answers()
+    tbs.log_answers("what's up" , "my answer", 0.9)
+
+    # return get_questions_answers()
 
 
 @app.post("/api/messages")

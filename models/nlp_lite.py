@@ -44,14 +44,14 @@ class QAModelLite:
             embedding_batches.append(self._get_embeddings(self.questions[i:i+batch_size]))
         self.questions_embeddings = np.concatenate(embedding_batches, axis=0)
 
-    def find_best_answer(self, question: str) -> str:
+    def find_best_answer(self, context, question: str) -> str:
         embedding = self._get_embeddings([question,])
         scores = self.questions_embeddings @ embedding.T  # compute dot product with each question in the database, returns shape (n_questions, 1)
         most_similar_id = np.argmax(scores)
         most_similar_question = self.questions[most_similar_id]
         best_answer = self.answers[most_similar_id]
         if self.logger is not None:
-            self.logger.log_answers(question, most_similar_question, best_answer, float(scores[most_similar_id]))
+            self.logger.log_answers(context, question, most_similar_question, best_answer, float(scores[most_similar_id]))
         return best_answer
 
     def _process_to_IDs_in_sparse_format(self, sentences):

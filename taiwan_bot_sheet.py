@@ -10,10 +10,6 @@ from config import DefaultConfig
 _logger = logging.getLogger(__name__)
 CONFIG = DefaultConfig()
 
-SPREADSHEET_FAQ = "Taiwan Bot FAQ"
-SPREADSHEET_LOG = "Taiwan Bot Log"
-SHEET_GENERAL = "General"
-SHEET_GOLDCARD = "GoldCard"
 
 class TaiwanBotSheet:
 
@@ -29,15 +25,17 @@ class TaiwanBotSheet:
     def __init__(self):
         _logger.info('Initiating TaiwanBotSheet')
 
-    def get_questions_answers(self):
-        sheet = self.client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")
+    def get_questions_answers(self, context):
+        sheet = self.client.open(SPREADSHEET_FAQ).worksheet(context)
         questions = list(map(str.strip, sheet.col_values(1)[1:]))
         answers = list(map(str.strip, sheet.col_values(2)[1:]))
 
         return [questions, answers]
 
-    def log_answers(self, user_question, similar_question, answer, score):
-        sheet = self.client.open("Taiwan Bot FAQ").worksheet("Log")
+    def log_answers(self, context, user_question, similar_question, answer, score):
+        if (context == "")
+
+        sheet = self.client.open(SPREADSHEET_LOG).worksheet(context)
 
         next_row = len(sheet.get_all_values()) + 1
         sheet.update( 'A' + str(next_row) , datetime.now().strftime("%d/%m/%Y %H:%M:%S"))

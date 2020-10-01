@@ -33,10 +33,7 @@ class TaiwanBotSheet:
         return [questions, answers]
 
     def log_answers(self, context, user_question, similar_question, answer, score):
-        if (context == "")
-
         sheet = self.client.open(SPREADSHEET_LOG).worksheet(context)
-
         next_row = len(sheet.get_all_values()) + 1
         sheet.update( 'A' + str(next_row) , datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         sheet.update( 'B' + str(next_row) , user_question)

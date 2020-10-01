@@ -10,6 +10,11 @@ from config import DefaultConfig
 _logger = logging.getLogger(__name__)
 CONFIG = DefaultConfig()
 
+SPREADSHEET_FAQ = "Taiwan Bot FAQ"
+SPREADSHEET_LOG = "Taiwan Bot Log"
+SHEET_GENERAL = "General"
+SHEET_GOLDCARD = "GoldCard"
+
 class TaiwanBotSheet:
 
     scope = ['https://spreadsheets.google.com/feeds',

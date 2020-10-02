@@ -20,8 +20,8 @@ class QAModelLite:
         self.questions = questions_answers[0]
         self.answers = questions_answers[1]
         self.logger = logger
-
         _logger.info('Downloading the model from TensorFlow Hub...')
+
         with tf.Session() as sess:
             module = tfhub.Module("https://tfhub.dev/google/universal-sentence-encoder-lite/2")
             spm_path = sess.run(module(signature="spm_path"))  # spm_path now contains a path to the SentencePiece model stored inside the TF-Hub module

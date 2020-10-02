@@ -15,7 +15,7 @@ from botbuilder.schema import Activity, ActivityTypes
 from bots import FAQBot
 from config import DefaultConfig
 from models.nlp_lite import QAModelLite
-from taiwan_bot_sheet import TaiwanBotSheet
+import taiwan_bot_sheet
 
 CONFIG = DefaultConfig()
 
@@ -56,7 +56,7 @@ async def on_error(context: TurnContext, error: Exception):
 
 adapter.on_turn_error = on_error
 
-tbs = TaiwanBotSheet()
+tbs = taiwan_bot_sheet.TaiwanBotSheet()
 
 bot = FAQBot(
     QAModelLite(tbs.get_questions_answers(), logger=tbs)
@@ -72,10 +72,10 @@ def healthcheck():
 
 @app.get("/sheet")
 def sheet():
-    tbs.log_answers("what's up", "my answer", 0.9)
-
-    # return get_questions_answers()
-
+    tbs = taiwan_bot_sheet.TaiwanBotSheet(taiwan_bot_sheet.SpreadsheetContext.GOLDCARD)
+    tbs.log_answers("shoul", "be", "in Goldcard gc logs", 1.2)
+    tbs.set_context(taiwan_bot_sheet.SpreadsheetContext.GENERAL)
+    tbs.log_answers("shoul", "be", "in Goldcard general logs", 1)
 
 @app.post("/api/messages")
 async def messages(req: Request):

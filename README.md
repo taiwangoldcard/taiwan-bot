@@ -19,14 +19,19 @@ A chatbot to answer all your questions about [Taiwan Gold Card](https://taiwango
 1. `pip install -r requirements.txt`
 2. `uvicorn app:app --reload`
 
+The endpoint where you can query the bot will appear, by default it will be `http://localhost:8000`
+
 If you get the message when starting it: 
 ```
-tensorflow.python.framework.errors_impl.NotFoundError: [....]]/tfhub_modules/539544f0a997d91c327c23285ea00c37588d92cc/tfhub_module.pb; No such file or directory
+[...]
+tensorflow.python.framework.errors_impl.NotFoundError: /var/[...]/tfhub_modules/539544f0a997d91c327c23285ea00c37588d92cc/tfhub_module.pb; No such file or directory
 ```
-Remove that folder
+Remove that folder with `sudo rm -rf /var/[...]/tfhub_modules/`
 
 ### Test the bot locally
-Install the [bot emulator](https://github.com/Microsoft/BotFramework-Emulator) - The endpoint is http://localhost:8000/api/messages - No credential needed
+- Install the [bot emulator](https://github.com/Microsoft/BotFramework-Emulator)
+- The endpoint is by default `http://localhost:8000/api/messages`
+- No credential are needed
 
 ## Deployment
 

@@ -8,6 +8,8 @@ from botbuilder.core import (
     BotFrameworkAdapterSettings,
     TurnContext,
     BotFrameworkAdapter,
+    ConversationState,
+    MemoryStorage
 )
 from fastapi import FastAPI, Request, HTTPException
 from botbuilder.schema import Activity, ActivityTypes
@@ -57,9 +59,11 @@ async def on_error(context: TurnContext, error: Exception):
 adapter.on_turn_error = on_error
 
 tbs = taiwan_bot_sheet.TaiwanBotSheet()
-
+memory = MemoryStorage()
+conversation_state = ConversationState(memory)
 bot = FAQBot(
-    QAModelLite(tbs.get_questions_answers(), logger=tbs)
+    QAModelLite(tbs.get_questions_answers(), logger=tbs),
+    conversation_state
 )
 app = FastAPI()
 
@@ -72,10 +76,12 @@ def healthcheck():
 
 @app.get("/sheet")
 def sheet():
-    tbs = taiwan_bot_sheet.TaiwanBotSheet(taiwan_bot_sheet.SpreadsheetContext.GOLDCARD)
+    tbs = taiwan_bot_sheet.TaiwanBotSheet(
+        taiwan_bot_sheet.SpreadsheetContext.GOLDCARD)
     tbs.log_answers("shoul", "be", "in Goldcard gc logs", 1.2)
     tbs.set_context(taiwan_bot_sheet.SpreadsheetContext.GENERAL)
     tbs.log_answers("shoul", "be", "in Goldcard general logs", 1)
+
 
 @app.post("/api/messages")
 async def messages(req: Request):

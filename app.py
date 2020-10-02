@@ -15,7 +15,7 @@ from botbuilder.schema import Activity, ActivityTypes
 from bots import FAQBot
 from config import DefaultConfig
 from models.nlp_lite import QAModelLite
-from taiwan_bot_sheet import TaiwanBotSheet
+import taiwan_bot_sheet
 
 CONFIG = DefaultConfig()
 
@@ -56,7 +56,7 @@ async def on_error(context: TurnContext, error: Exception):
 
 adapter.on_turn_error = on_error
 
-tbs = TaiwanBotSheet()
+tbs = taiwan_bot_sheet.TaiwanBotSheet()
 
 bot = FAQBot(
     QAModelLite(tbs.get_questions_answers(), logger=tbs)

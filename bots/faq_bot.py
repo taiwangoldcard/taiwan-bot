@@ -1,7 +1,6 @@
 from botbuilder.core import ActivityHandler, MessageFactory, TurnContext
 from botbuilder.schema import ChannelAccount
 
-
 class FAQBot(ActivityHandler):
     """A model to find the most relevant answers for specific questions."""
 

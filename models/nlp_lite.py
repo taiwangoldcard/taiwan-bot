@@ -10,7 +10,6 @@ tf.disable_v2_behavior()
 
 _logger = logging.getLogger(__name__)
 
-
 class QAModelLite:
     """A model to find the most relevant answers for specific questions. Lite Version."""
 

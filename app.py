@@ -72,10 +72,10 @@ def healthcheck():
 
 @app.get("/sheet")
 def sheet():
-    tbs.log_answers("what's up", "my answer", 0.9)
-
-    # return get_questions_answers()
-
+    tbs = taiwan_bot_sheet.TaiwanBotSheet(taiwan_bot_sheet.SpreadsheetContext.GOLDCARD)
+    tbs.log_answers("shoul", "be", "in Goldcard gc logs", 1.2)
+    tbs.set_context(taiwan_bot_sheet.SpreadsheetContext.GENERAL)
+    tbs.log_answers("shoul", "be", "in Goldcard general logs", 1)
 
 @app.post("/api/messages")
 async def messages(req: Request):

@@ -66,12 +66,12 @@ class TaiwanBotSheet:
         sheet.update( 'D' + str(next_row) , answer)
         sheet.update( 'E' + str(next_row) , score)
 
-    def get_context():
-        return CONTEXTS[context];
+    def get_context(self):
+        return CONTEXTS[self.context];
 
-    def set_context(context):
+    def set_context(self, context):
         if context in CONTEXTS:
-            context = context;
+            self.context = context;
         else:
             _logger.error("This context type does not exist. Setting the GENERAL context instead...")
-            context = SpreadsheetContext.GENERAL;
+            self.context = SpreadsheetContext.GENERAL;

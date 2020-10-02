@@ -9,7 +9,3 @@ class DefaultConfig:
     APP_ID = os.environ.get("MICROSOFT_APP_ID", "")
     APP_PASSWORD = os.environ.get("MICROSOFT_APP_PASSWORD", "")
     GOOGLE_SERVICE_ACCOUNT = os.environ.get("GOOGLE_SERVICE_ACCOUNT", "")
-    SPREADSHEET_FAQ = "Taiwan Bot FAQ"
-    SPREADSHEET_LOG = "Taiwan Bot Log"
-    CONTEXT_GENERAL = "General"
-    CONTEXT_GOLDCARD = "GoldCard"

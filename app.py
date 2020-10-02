@@ -59,7 +59,7 @@ adapter.on_turn_error = on_error
 tbs = TaiwanBotSheet()
 
 bot = FAQBot(
-    QAModelLite(tbs.get_questions_answers(), logger=tbs)
+    QAModelLite(tbs.get_questions_answers(CONFIG.CONTEXT_GENERAL), logger=tbs)
 )
 app = FastAPI()
 
@@ -72,7 +72,7 @@ def healthcheck():
 
 @app.get("/sheet")
 def sheet():
-    tbs.log_answers("what's up", "my answer", 0.9)
+    tbs.log_answers(CONFIG.CONTEXT_GENERAL, "what's up", "my answer", 0.9)
 
     # return get_questions_answers()
 

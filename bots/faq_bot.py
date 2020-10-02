@@ -1,6 +1,8 @@
 from botbuilder.core import ActivityHandler, MessageFactory, TurnContext
 from botbuilder.schema import ChannelAccount
+from config import DefaultConfig
 
+CONFIG = DefaultConfig()
 
 class FAQBot(ActivityHandler):
     """A model to find the most relevant answers for specific questions."""
@@ -18,6 +20,6 @@ class FAQBot(ActivityHandler):
     async def on_message_activity(self, turn_context: TurnContext):
         return await turn_context.send_activity(
             MessageFactory.text(
-                self.qa_model.find_best_answer(turn_context.activity.text)
+                self.qa_model.find_best_answer(CONFIG.CONTEXT_GENERAL, turn_context.activity.text)
             )
         )

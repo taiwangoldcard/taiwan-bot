@@ -45,22 +45,33 @@ class TaiwanBotSheet:
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
         service_account_info_dict, scope)
     client = gspread.authorize(creds)
+    context = SpreadsheetContext.GENERAL
 
-    def __init__(self):
+    def __init__(self, context=SpreadsheetContext.GENERAL):
         _logger.info('Initiating TaiwanBotSheet')
+        self.context = context
 
     def get_questions_answers(self):
-        sheet = self.client.open("Taiwan Bot FAQ").worksheet("GoldCard")
+        sheet = self.client.open(SPREADSHEET_FAQ_FILE).worksheet(CONTEXTS[self.context]["sheet"])
         questions = list(map(str.strip, sheet.col_values(1)[1:]))
         answers = list(map(str.strip, sheet.col_values(2)[1:]))
         return [questions, answers]
 
     def log_answers(self, user_question, similar_question, answer, score):
-        sheet = self.client.open("Taiwan Bot FAQ").worksheet("Log")
-
+        sheet = self.client.open(SPREADSHEET_LOG_FILE).worksheet(CONTEXTS[self.context]["sheet"])
         next_row = len(sheet.get_all_values()) + 1
         sheet.update( 'A' + str(next_row) , datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         sheet.update( 'B' + str(next_row) , user_question)
         sheet.update( 'C' + str(next_row) , similar_question)
         sheet.update( 'D' + str(next_row) , answer)
         sheet.update( 'E' + str(next_row) , score)
+
+    def get_context():
+        return CONTEXTS[context];
+
+    def set_context(context):
+        if context in CONTEXTS:
+            context = context;
+        else:
+            _logger.error("This context type does not exist. Setting the GENERAL context instead...")
+            context = SpreadsheetContext.GENERAL;

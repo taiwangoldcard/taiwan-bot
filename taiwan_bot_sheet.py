@@ -1,14 +1,22 @@
-from datetime import datetime
 import json
 import logging
-
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
 from config import DefaultConfig
+from datetime import datetime
+from enum import Enum
+from oauth2client.service_account import ServiceAccountCredentials
 
 _logger = logging.getLogger(__name__)
 CONFIG = DefaultConfig()
+
+class SpreadsheetContext(Enum):
+    GENERAL = 1
+    GOLD_CARD = 2
+    LAW = 3
+
+class SpreadsheetType(Enum):
+    QUESTIONS_ANSWERS = 1
+    LOG = 2
 
 class TaiwanBotSheet:
 
@@ -25,10 +33,9 @@ class TaiwanBotSheet:
         _logger.info('Initiating TaiwanBotSheet')
 
     def get_questions_answers(self):
-        sheet = self.client.open("Taiwan Bot FAQ").worksheet("GoldCard FAQ")
+        sheet = self.client.open("Taiwan Bot FAQ").worksheet("GoldCard")
         questions = list(map(str.strip, sheet.col_values(1)[1:]))
         answers = list(map(str.strip, sheet.col_values(2)[1:]))
-
         return [questions, answers]
 
     def log_answers(self, user_question, similar_question, answer, score):

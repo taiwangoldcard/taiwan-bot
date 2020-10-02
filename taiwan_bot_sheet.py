@@ -9,14 +9,31 @@ from oauth2client.service_account import ServiceAccountCredentials
 _logger = logging.getLogger(__name__)
 CONFIG = DefaultConfig()
 
+SPREADSHEET_FAQ_FILE = "Taiwan Bot FAQ"
+SPREADSHEET_LOG_FILE = "Taiwan Bot Log"
+
 class SpreadsheetContext(Enum):
     GENERAL = 1
-    GOLD_CARD = 2
+    GOLDCARD = 2
     LAW = 3
 
-class SpreadsheetType(Enum):
-    QUESTIONS_ANSWERS = 1
-    LOG = 2
+CONTEXTS = {
+    SpreadsheetContext.GENERAL: {
+        "qa_file": SPREADSHEET_FAQ_FILE,
+        "log_file": SPREADSHEET_LOG_FILE,
+        "sheet": "General"
+    },
+    SpreadsheetContext.GOLDCARD: {
+        "qa_file": SPREADSHEET_FAQ_FILE,
+        "log_file": SPREADSHEET_LOG_FILE,
+        "sheet": "GoldCard"
+    },
+    SpreadsheetContext.LAW: {
+        "qa_file": SPREADSHEET_FAQ_FILE,
+        "log_file": SPREADSHEET_LOG_FILE,
+        "sheet": "Law"
+    },
+}
 
 class TaiwanBotSheet:
 

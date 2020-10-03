@@ -1,5 +1,7 @@
-from taiwan_bot_sheet import SpreadsheetContext
 import datetime
+import json
+
+from taiwan_bot_sheet import SpreadsheetContext, CONTEXTS
 
 
 class ConversationData:
@@ -14,3 +16,11 @@ class ConversationData:
         self.channel_id = channel_id
         self.recipient_id = recipient_id
         self.context = context
+
+    def toJSON(self):
+        return json.dumps({
+            'context': CONTEXTS[self.context]['sheet'],
+            'channel_id': self.channel_id,
+            'recipient_id': self.recipient_id,
+            'timestamp': self.timestamp.strftime("%d/%m/%Y %H:%M:%S"),
+        })

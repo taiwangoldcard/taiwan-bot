@@ -49,7 +49,7 @@ class FAQBot(ActivityHandler):
         best_answer, most_similar_question, score = self._find_best_answer(question, conversation_data.context)
         if score < UNKNOWN_THRESHOLD:
             best_answer = UNKNOWN_ANSWER
-        self.bot_sheet.log_answers(question, most_similar_question, best_answer, score)
+        self.bot_sheet.log_answers(question, most_similar_question, best_answer, score, conversation_data.toJSON())
 
         return await turn_context.send_activity(
             MessageFactory.text(best_answer)

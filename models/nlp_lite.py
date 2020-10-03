@@ -10,15 +10,10 @@ tf.disable_v2_behavior()
 
 _logger = logging.getLogger(__name__)
 
-class QAModelLite:
-    """A model to find the most relevant answers for specific questions. Lite Version."""
+class UniversalSentenceEncoderLite:
+    """A model to encode sentences into embeddings."""
 
-    def __init__(self, questions_answers: list, logger=None):
-        assert len(questions_answers) == 2
-        assert len(questions_answers[0]) == len(questions_answers[1])
-        self.questions = questions_answers[0]
-        self.answers = questions_answers[1]
-        self.logger = logger
+    def __init__(self):
         _logger.info('Downloading the model from TensorFlow Hub...')
 
         with tf.Session() as sess:
@@ -36,22 +31,18 @@ class QAModelLite:
             )
         )
 
-        _logger.info('Extracting embeddings for all questions in the database. This can take some time...')
-        batch_size = 10
-        embedding_batches = []
-        for i in range(0, len(self.questions), batch_size):
-            embedding_batches.append(self._get_embeddings(self.questions[i:i+batch_size]))
-        self.questions_embeddings = np.concatenate(embedding_batches, axis=0)
+    def extract_embedding(self, sentence: str) -> np.ndarray:
+        return self._get_embeddings([sentence,])
 
-    def find_best_answer(self, question: str) -> str:
-        embedding = self._get_embeddings([question,])
-        scores = self.questions_embeddings @ embedding.T  # compute dot product with each question in the database, returns shape (n_questions, 1)
-        most_similar_id = np.argmax(scores)
-        most_similar_question = self.questions[most_similar_id]
-        best_answer = self.answers[most_similar_id]
-        if self.logger is not None:
-            self.logger.log_answers(question, most_similar_question, best_answer, float(scores[most_similar_id]))
-        return best_answer
+    def extract_embeddings(self, sentences, batch_size=10):
+        embedding_batches = []
+        for i in range(0, len(sentences), batch_size):
+            embedding_batches.append(self._get_embeddings(sentences[i:i+batch_size]))
+
+        return np.concatenate(embedding_batches, axis=0)
+
+    def get_similarity_scores(self, sentence_embedding: np.ndarray, embeddings_list: np.ndarray) -> np.ndarray:
+        return embeddings_list @ sentence_embedding.T  # compute dot product with each question in the database, returns shape (n_questions, 1)
 
     def _process_to_IDs_in_sparse_format(self, sentences):
         # An utility method that processes sentences with the sentence piece processor

@@ -51,8 +51,11 @@ class TaiwanBotSheet:
         _logger.info('Initiating TaiwanBotSheet')
         self.context = context
 
-    def get_questions_answers(self):
-        sheet = self.client.open(SPREADSHEET_FAQ_FILE).worksheet(CONTEXTS[self.context]["sheet"])
+    def get_questions_answers(self, context=None):
+        if context is None:
+            context = self.context
+        
+        sheet = self.client.open(SPREADSHEET_FAQ_FILE).worksheet(CONTEXTS[context]["sheet"])
         questions = list(map(str.strip, sheet.col_values(1)[1:]))
         answers = list(map(str.strip, sheet.col_values(2)[1:]))
         return [questions, answers]

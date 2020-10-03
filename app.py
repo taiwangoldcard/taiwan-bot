@@ -16,7 +16,6 @@ from botbuilder.schema import Activity, ActivityTypes
 
 from bots import FAQBot
 from config import DefaultConfig
-from models.nlp_lite import QAModelLite
 import taiwan_bot_sheet
 
 CONFIG = DefaultConfig()
@@ -61,10 +60,7 @@ adapter.on_turn_error = on_error
 tbs = taiwan_bot_sheet.TaiwanBotSheet()
 memory = MemoryStorage()
 conversation_state = ConversationState(memory)
-bot = FAQBot(
-    QAModelLite(tbs.get_questions_answers(), logger=tbs),
-    conversation_state
-)
+bot = FAQBot(tbs, conversation_state)
 app = FastAPI()
 
 

@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import re
 
 import numpy as np
+from tensorflow.python.ops.variables import _UNKNOWN
 
 from taiwan_bot_sheet import TaiwanBotSheet, SpreadsheetContext
 from botbuilder.core import ActivityHandler, MessageFactory, TurnContext, ConversationState
@@ -11,6 +12,8 @@ from models.nlp_lite import UniversalSentenceEncoderLite
 
 GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
+UNKKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
+UNKNOWN_THRESHOLD = 0.5
 
 class FAQBot(ActivityHandler):
     """A model to find the most relevant answers for specific questions."""
@@ -44,6 +47,8 @@ class FAQBot(ActivityHandler):
 
         question = turn_context.activity.text
         best_answer, most_similar_question, score = self._find_best_answer(question, conversation_data.context)
+        if score < UNKNOWN_THRESHOLD:
+            best_answer = UNKKNOWN_ANSWER
         self.bot_sheet.log_answers(question, most_similar_question, best_answer, score)
 
         return await turn_context.send_activity(
@@ -73,5 +78,6 @@ class FAQBot(ActivityHandler):
         most_similar_id = np.argmax(scores)
         most_similar_question = self.questions[context][most_similar_id]
         best_answer = self.answers[context][most_similar_id]
+        score = float(scores[most_similar_id])
 
-        return best_answer, most_similar_question, float(scores[most_similar_id])
+        return best_answer, most_similar_question, score

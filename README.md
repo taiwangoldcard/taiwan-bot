@@ -6,13 +6,13 @@ A chatbot to answer all your questions about [Taiwan Gold Card](https://taiwango
 - [Eric](https://twitter.com/eric_khun) connected the data
 
 
-## Add me on Line
+## Add me on Facebook Messenger
+[Talk to the bot](https://m.me/thetaiwanbot) with Facebook Messenger
 
+
+## Add me on Line
 ![Taiwan Bot line account](./line.png)
 
-## Add me on Messenger
-
-![Taiwan Bot messenger account](./messenger.png)
 
 ## Develop
 

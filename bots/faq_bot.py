@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
 import re
-
 import numpy as np
 from tensorflow.python.ops.variables import _UNKNOWN
 
 from taiwan_bot_sheet import TaiwanBotSheet, SpreadsheetContext
-from botbuilder.core import ActivityHandler, MessageFactory, TurnContext, ConversationState
-from botbuilder.schema import ChannelAccount
+from botbuilder.adapters.slack import SlackRequestBody
+from botbuilder.schema import (Activity)
+from botbuilder.core import ActivityHandler, TurnContext, ConversationState
 from .conversation_data import ConversationData
 from models.nlp_lite import UniversalSentenceEncoderLite
 
@@ -14,6 +14,7 @@ GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
 UNKNOWN_THRESHOLD = 0.5
+
 
 class FAQBot(ActivityHandler):
     """A model to find the most relevant answers for specific questions."""
@@ -30,8 +31,10 @@ class FAQBot(ActivityHandler):
         self.answers = {}
         self.questions_embeddings = {}
         for context in [SpreadsheetContext.GENERAL, SpreadsheetContext.GOLDCARD]:
-            self.questions[context], self.answers[context] = self.bot_sheet.get_questions_answers(context=context)
-            self.questions_embeddings[context] = self.encoder_model.extract_embeddings(self.questions[context])
+            self.questions[context], self.answers[context] = self.bot_sheet.get_questions_answers(
+                context=context)
+            self.questions_embeddings[context] = self.encoder_model.extract_embeddings(
+                self.questions[context])
 
     async def on_message_activity(self, turn_context: TurnContext):
         conversation_data = await self.conversation_data_accessor.get(
@@ -46,13 +49,33 @@ class FAQBot(ActivityHandler):
         conversation_data.recipient_id = turn_context.activity.recipient.id
 
         question = turn_context.activity.text
-        best_answer, most_similar_question, score = self._find_best_answer(question, conversation_data.context)
+        best_answer, most_similar_question, score = self._find_best_answer(
+            question, conversation_data.context)
         if score < UNKNOWN_THRESHOLD:
             best_answer = UNKNOWN_ANSWER
-        self.bot_sheet.log_answers(question, most_similar_question, best_answer, score, conversation_data.toJSON())
+        self.bot_sheet.log_answers(
+            question, most_similar_question, best_answer, score, conversation_data.toJSON())
+
+        body = turn_context.activity.channel_data
+
+        activity = turn_context.activity.create_reply(
+            best_answer
+        )
+
+        if turn_context.activity.channel_id == "slack" and body["SlackMessage"] is not None:
+            slack_message = SlackRequestBody(**body["SlackMessage"])
+
+            if slack_message.event.thread_ts is None:
+                channel_data = {
+                    "text": best_answer,
+                    "thread_ts": slack_message.event.ts
+                }
+
+                activity.channel_data = channel_data
+                activity.text = None
 
         return await turn_context.send_activity(
-            MessageFactory.text(best_answer)
+            activity
         )
 
     async def on_turn(self, turn_context: TurnContext):
@@ -74,7 +97,8 @@ class FAQBot(ActivityHandler):
         assert context in self.questions_embeddings
 
         question_embedding = self.encoder_model.extract_embedding(question)
-        scores = self.encoder_model.get_similarity_scores(question_embedding, self.questions_embeddings[context])
+        scores = self.encoder_model.get_similarity_scores(
+            question_embedding, self.questions_embeddings[context])
         most_similar_id = np.argmax(scores)
         most_similar_question = self.questions[context][most_similar_id]
         best_answer = self.answers[context][most_similar_id]

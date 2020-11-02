@@ -5,7 +5,6 @@ from tensorflow.python.ops.variables import _UNKNOWN
 
 from taiwan_bot_sheet import TaiwanBotSheet, SpreadsheetContext
 from botbuilder.adapters.slack import SlackRequestBody
-from botbuilder.schema import (Activity)
 from botbuilder.core import ActivityHandler, TurnContext, ConversationState
 from .conversation_data import ConversationData
 from models.nlp_lite import UniversalSentenceEncoderLite

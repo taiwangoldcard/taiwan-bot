@@ -62,6 +62,9 @@ class FAQBot(ActivityHandler):
             best_answer
         )
 
+        # TODO: we really need an acceptance test suite:
+        # - checks if we are in a slack channel
+        # - checks whether in are already in a thread
         if turn_context.activity.channel_id == "slack" and body["SlackMessage"] is not None:
             slack_message = SlackRequestBody(**body["SlackMessage"])
 

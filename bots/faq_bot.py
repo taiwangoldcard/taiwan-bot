@@ -36,6 +36,9 @@ class FAQBot(ActivityHandler):
                 self.questions[context])
 
     async def on_message_activity(self, turn_context: TurnContext):
+        if turn_context.activity.channel_id == "facebook":
+            print(turn_context.activity.channel_data)
+
         conversation_data = await self.conversation_data_accessor.get(
             turn_context, ConversationData
         )

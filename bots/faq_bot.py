@@ -43,8 +43,8 @@ class FAQBot(ActivityHandler):
         if turn_context.activity.channel_id == "facebook":
             channel_data = turn_context.activity.channel_data
             if "postback" in channel_data and channel_data["postback"]["payload"] == "get_started":
-                questions = ["Taiwan Gold Card",
-                             "Rent in Taiwan", "Tax in Taiwan"]
+                questions = ["What's gold card?",
+                             "How's the rent?", "Tax in taiwan"]
 
                 def to_quick_reply(s):
                     return {

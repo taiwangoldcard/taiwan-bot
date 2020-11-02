@@ -13,6 +13,7 @@ GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
 UNKNOWN_THRESHOLD = 0.5
+DEFAULT_WELCOME_MESSAGE = "Greetings! I'm the taiwan chat bot! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below:"
 
 
 class FAQBot(ActivityHandler):
@@ -36,8 +37,34 @@ class FAQBot(ActivityHandler):
                 self.questions[context])
 
     async def on_message_activity(self, turn_context: TurnContext):
+        # TODO: looks like it's almost type to create an abstraction layer to handle channel-specific
+        # already 2 use cases here: facebook + slack
+
         if turn_context.activity.channel_id == "facebook":
-            print(turn_context.activity.channel_data)
+            channel_data = turn_context.activity.channel_data
+            if "postback" in channel_data and channel_data["postback"]["payload"] == "get_started":
+                questions = ["Taiwan Gold Card",
+                             "Rent in Taiwan", "Tax in Taiwan"]
+
+                def to_quick_reply(s):
+                    return {
+                        "content_type": "text",
+                        "title": s,
+                        "payload": s
+                    }
+                quick_replies = list(map(to_quick_reply, questions))
+
+                channel_data = {
+                    "text": DEFAULT_WELCOME_MESSAGE,
+                    "quick_replies": quick_replies
+                }
+
+                activity = turn_context.activity.create_reply(
+                    DEFAULT_WELCOME_MESSAGE)
+                activity.channel_data = channel_data
+                activity.text = None
+
+                return await turn_context.send_activity(activity)
 
         conversation_data = await self.conversation_data_accessor.get(
             turn_context, ConversationData

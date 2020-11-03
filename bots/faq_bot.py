@@ -13,9 +13,9 @@ GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
 UNKNOWN_THRESHOLD = 0.5
-DEFAULT_WELCOME_MESSAGE = "Greetings! I'm the taiwan chat bot! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
-WELCOME_QUICK_REPLIES = ["What's gold card?",
-                         "How's the rent?", "Tax in taiwan"]
+DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
+WELCOME_QUICK_REPLIES = ["Gold Card?",
+                         "How's the rent?", "Tax in Taiwan?"]
 
 
 class FAQBot(ActivityHandler):

@@ -13,6 +13,7 @@ GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
 UNKNOWN_THRESHOLD = 0.5
+NON_TEXT_QUESTION_REPLY = "Sorry, I only understand English. Please try again."
 DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
 WELCOME_QUICK_REPLIES = ["Gold Card?",
                          "How's the rent?", "Tax in Taiwan?"]
@@ -39,11 +40,13 @@ class FAQBot(ActivityHandler):
                 self.questions[context])
 
     async def on_message_activity(self, turn_context: TurnContext):
+        activity = turn_context.activity
+
         # TODO: looks like it's almost time to create an abstraction layer to handle channel-specific
         # already 2 use cases here: facebook + slack
 
-        if turn_context.activity.channel_id == "facebook":
-            channel_data = turn_context.activity.channel_data
+        if activity.channel_id == "facebook":
+            channel_data = activity.channel_data
             if "postback" in channel_data and channel_data["postback"]["payload"] == "get_started":
                 def to_quick_reply(s):
                     return {
@@ -59,42 +62,45 @@ class FAQBot(ActivityHandler):
                     "quick_replies": quick_replies
                 }
 
-                activity = turn_context.activity.create_reply(
+                reply_activity = activity.create_reply(
                     DEFAULT_WELCOME_MESSAGE)
-                activity.channel_data = channel_data
-                activity.text = None
+                reply_activity.channel_data = channel_data
+                reply_activity.text = None
 
-                return await turn_context.send_activity(activity)
+                return await turn_context.send_activity(reply_activity)
 
         conversation_data = await self.conversation_data_accessor.get(
             turn_context, ConversationData
         )
+        self._copy_activity_details_to_conversation_data(activity, conversation_data)
 
-        self.detect_context(turn_context, conversation_data)
+        # We currently only support text-based conversations; no text, no service
+        question = activity.text
+        if question is not None:
+            self._detect_and_set_context(question, conversation_data)
 
-        conversation_data.timestamp = turn_context.activity.timestamp
+            best_answer, most_similar_question, score = self._find_best_answer(
+                question, conversation_data.context)
+            if score < UNKNOWN_THRESHOLD:
+                best_answer = UNKNOWN_ANSWER
 
-        conversation_data.channel_id = turn_context.activity.channel_id
-        conversation_data.recipient_id = turn_context.activity.recipient.id
+            self.bot_sheet.log_answers(
+                question, most_similar_question, best_answer, score, conversation_data.toJSON())
+        else:
+            best_answer = NON_TEXT_QUESTION_REPLY
+            self.bot_sheet.log_answers(
+                "non-text question", "N/A", best_answer, 0.0, conversation_data.toJSON())
 
-        question = turn_context.activity.text
-        best_answer, most_similar_question, score = self._find_best_answer(
-            question, conversation_data.context)
-        if score < UNKNOWN_THRESHOLD:
-            best_answer = UNKNOWN_ANSWER
-        self.bot_sheet.log_answers(
-            question, most_similar_question, best_answer, score, conversation_data.toJSON())
+        body = activity.channel_data
 
-        body = turn_context.activity.channel_data
-
-        activity = turn_context.activity.create_reply(
+        reply_activity = activity.create_reply(
             best_answer
         )
 
         # TODO: we really need an acceptance test suite:
         # - checks if we are in a slack channel
         # - checks whether in are already in a thread
-        if turn_context.activity.channel_id == "slack" and body["SlackMessage"] is not None:
+        if activity.channel_id == "slack" and body["SlackMessage"] is not None:
             slack_message = SlackRequestBody(**body["SlackMessage"])
 
             if slack_message.event.thread_ts is None:
@@ -103,11 +109,11 @@ class FAQBot(ActivityHandler):
                     "thread_ts": slack_message.event.ts
                 }
 
-                activity.channel_data = channel_data
-                activity.text = None
+                reply_activity.channel_data = channel_data
+                reply_activity.text = None
 
         return await turn_context.send_activity(
-            activity
+            reply_activity
         )
 
     async def on_turn(self, turn_context: TurnContext):
@@ -115,14 +121,14 @@ class FAQBot(ActivityHandler):
 
         await self.conversation_state.save_changes(turn_context)
 
-    def detect_context(self, turn_context: TurnContext, conversation_data):
+    def _detect_and_set_context(self, text: str, conversation_data):
         if conversation_data.timestamp is not None:
             elapsed = datetime.now(timezone.utc) - conversation_data.timestamp
 
             if elapsed.total_seconds() > SESSION_TIMEOUT_SECONDS:
                 conversation_data.context = SpreadsheetContext.GENERAL
 
-        if re.search(self.regex, turn_context.activity.text) is not None:
+        if re.search(self.regex, text) is not None:
             conversation_data.context = SpreadsheetContext.GOLDCARD
 
     def _find_best_answer(self, question, context):
@@ -137,3 +143,8 @@ class FAQBot(ActivityHandler):
         score = float(scores[most_similar_id])
 
         return best_answer, most_similar_question, score
+
+    def _copy_activity_details_to_conversation_data(self, activity, conversation_data):
+        conversation_data.timestamp = activity.timestamp
+        conversation_data.channel_id = activity.channel_id
+        conversation_data.recipient_id = activity.recipient.id

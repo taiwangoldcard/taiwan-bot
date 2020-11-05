@@ -13,6 +13,7 @@ GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
 UNKNOWN_THRESHOLD = 0.5
+NON_TEXT_QUESTION_REPLY = "Sorry, I only understand English. Please try again."
 DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
 WELCOME_QUICK_REPLIES = ["Gold Card?",
                          "How's the rent?", "Tax in Taiwan?"]
@@ -70,20 +71,27 @@ class FAQBot(ActivityHandler):
             turn_context, ConversationData
         )
 
-        self.detect_context(turn_context, conversation_data)
-
-        conversation_data.timestamp = turn_context.activity.timestamp
-
-        conversation_data.channel_id = turn_context.activity.channel_id
-        conversation_data.recipient_id = turn_context.activity.recipient.id
-
+        # We currently only support text-based conversations; no text, no service
         question = turn_context.activity.text
-        best_answer, most_similar_question, score = self._find_best_answer(
-            question, conversation_data.context)
-        if score < UNKNOWN_THRESHOLD:
-            best_answer = UNKNOWN_ANSWER
-        self.bot_sheet.log_answers(
-            question, most_similar_question, best_answer, score, conversation_data.toJSON())
+        if question is not None:
+            self.detect_context(question, conversation_data)
+
+            conversation_data.timestamp = turn_context.activity.timestamp
+
+            conversation_data.channel_id = turn_context.activity.channel_id
+            conversation_data.recipient_id = turn_context.activity.recipient.id
+
+            best_answer, most_similar_question, score = self._find_best_answer(
+                question, conversation_data.context)
+            if score < UNKNOWN_THRESHOLD:
+                best_answer = UNKNOWN_ANSWER
+
+            self.bot_sheet.log_answers(
+                question, most_similar_question, best_answer, score, conversation_data.toJSON())
+        else:
+            best_answer = NON_TEXT_QUESTION_REPLY
+            self.bot_sheet.log_answers(
+                "non-text question", "N/A", best_answer, 0.0, conversation_data.toJSON())
 
         body = turn_context.activity.channel_data
 
@@ -115,14 +123,14 @@ class FAQBot(ActivityHandler):
 
         await self.conversation_state.save_changes(turn_context)
 
-    def detect_context(self, turn_context: TurnContext, conversation_data):
+    def detect_context(self, text: str, conversation_data):
         if conversation_data.timestamp is not None:
             elapsed = datetime.now(timezone.utc) - conversation_data.timestamp
 
             if elapsed.total_seconds() > SESSION_TIMEOUT_SECONDS:
                 conversation_data.context = SpreadsheetContext.GENERAL
 
-        if re.search(self.regex, turn_context.activity.text) is not None:
+        if re.search(self.regex, text) is not None:
             conversation_data.context = SpreadsheetContext.GOLDCARD
 
     def _find_best_answer(self, question, context):

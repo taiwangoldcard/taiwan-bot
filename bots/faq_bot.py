@@ -72,14 +72,12 @@ class FAQBot(ActivityHandler):
         conversation_data = await self.conversation_data_accessor.get(
             turn_context, ConversationData
         )
-        conversation_data.timestamp = activity.timestamp
-        conversation_data.channel_id = activity.channel_id
-        conversation_data.recipient_id = activity.recipient.id
+        self._copy_activity_details_to_conversation_data(activity, conversation_data)
 
         # We currently only support text-based conversations; no text, no service
         question = activity.text
         if question is not None:
-            self.detect_context(question, conversation_data)
+            self._detect_and_set_context(question, conversation_data)
 
             best_answer, most_similar_question, score = self._find_best_answer(
                 question, conversation_data.context)
@@ -123,7 +121,7 @@ class FAQBot(ActivityHandler):
 
         await self.conversation_state.save_changes(turn_context)
 
-    def detect_context(self, text: str, conversation_data):
+    def _detect_and_set_context(self, text: str, conversation_data):
         if conversation_data.timestamp is not None:
             elapsed = datetime.now(timezone.utc) - conversation_data.timestamp
 
@@ -145,3 +143,8 @@ class FAQBot(ActivityHandler):
         score = float(scores[most_similar_id])
 
         return best_answer, most_similar_question, score
+
+    def _copy_activity_details_to_conversation_data(self, activity, conversation_data):
+        conversation_data.timestamp = activity.timestamp
+        conversation_data.channel_id = activity.channel_id
+        conversation_data.recipient_id = activity.recipient.id

@@ -70,16 +70,14 @@ class FAQBot(ActivityHandler):
         conversation_data = await self.conversation_data_accessor.get(
             turn_context, ConversationData
         )
+        conversation_data.timestamp = turn_context.activity.timestamp
+        conversation_data.channel_id = turn_context.activity.channel_id
+        conversation_data.recipient_id = turn_context.activity.recipient.id
 
         # We currently only support text-based conversations; no text, no service
         question = turn_context.activity.text
         if question is not None:
             self.detect_context(question, conversation_data)
-
-            conversation_data.timestamp = turn_context.activity.timestamp
-
-            conversation_data.channel_id = turn_context.activity.channel_id
-            conversation_data.recipient_id = turn_context.activity.recipient.id
 
             best_answer, most_similar_question, score = self._find_best_answer(
                 question, conversation_data.context)

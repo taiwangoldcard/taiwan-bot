@@ -123,7 +123,7 @@ class FAQBot(ActivityHandler):
         await self.conversation_state.save_changes(turn_context)
 
     def _clean_question(self, text: str):
-        clean_text = text.replace("@taiwan-bot")
+        clean_text = text.replace("@taiwan-bot", "")
 
         return clean_text
 

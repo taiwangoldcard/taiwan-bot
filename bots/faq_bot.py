@@ -77,6 +77,7 @@ class FAQBot(ActivityHandler):
         # We currently only support text-based conversations; no text, no service
         question = activity.text
         if question is not None:
+            question = self._clean_question(question)
             self._detect_and_set_context(question, conversation_data)
 
             best_answer, most_similar_question, score = self._find_best_answer(
@@ -120,6 +121,11 @@ class FAQBot(ActivityHandler):
         await super().on_turn(turn_context)
 
         await self.conversation_state.save_changes(turn_context)
+
+    def _clean_question(self, text: str):
+        clean_text = text.replace("@taiwan-bot")
+
+        return clean_text
 
     def _detect_and_set_context(self, text: str, conversation_data):
         if conversation_data.timestamp is not None:

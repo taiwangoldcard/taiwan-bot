@@ -55,10 +55,24 @@ class TaiwanBotSheet:
     def get_questions_answers(self, context=None):
         if context is None:
             context = self.context
-        
-        sheet = self.client.open(SPREADSHEET_FAQ_FILE).worksheet(CONTEXTS[context]["sheet"])
-        questions = list(map(str.strip, sheet.col_values(1)[1:]))
-        answers = list(map(str.strip, sheet.col_values(2)[1:]))
+
+        spreadsheet = self.client.open(SPREADSHEET_FAQ_FILE)
+        sheet = spreadsheet.worksheet(CONTEXTS[context]["sheet"])
+        # Each question can potentially be multiple lines
+        question_multiples = list(map(str.splitlines, list(map(str.strip, sheet.col_values(1)[1:]))))
+        non_duplicated_answers = list(map(str.strip, sheet.col_values(2)[1:]))
+
+        # The end result is duplicate answers for each row in the spreadsheet
+        # that has multiple questions
+        questions = []
+        answers = []
+        for index in range(len(question_multiples)):
+            question_multiple = question_multiples[index]
+            answer = non_duplicated_answers[index]
+            for question in question_multiple:
+                questions.append(question)
+                answers.append(answer)
+
         return [questions, answers]
 
     def log_answers(self, user_question, similar_question, answer, score, state):

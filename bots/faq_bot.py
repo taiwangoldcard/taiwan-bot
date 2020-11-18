@@ -122,12 +122,8 @@ class FAQBot(ActivityHandler):
 
         await self.conversation_state.save_changes(turn_context)
 
-    # text is alread trimmed of whitespaces
     def _clean_question(self, text: str):
-        clean_text = text
-        # remove slack mention
-        if text.startswith("@taiwan-bot"):
-            clean_text = ' '.join(text.split()[1:])
+        clean_text = text.replace("@taiwan-bot")
 
         return clean_text
 

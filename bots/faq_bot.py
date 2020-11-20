@@ -78,8 +78,9 @@ class FAQBot(ActivityHandler):
         question = activity.text
         if question is not None:
             question = self._clean_question(question)
-            self._detect_and_set_context(question, conversation_data)
 
+            question = self._detect_and_set_context(question, conversation_data)
+ 
             best_answer, most_similar_question, score = self._find_best_answer(
                 question, conversation_data.context)
             if score < UNKNOWN_THRESHOLD:
@@ -124,7 +125,6 @@ class FAQBot(ActivityHandler):
 
     def _clean_question(self, text: str):
         clean_text = text.replace("@taiwan-bot", "")
-
         return clean_text
 
     def _detect_and_set_context(self, text: str, conversation_data):
@@ -137,6 +137,16 @@ class FAQBot(ActivityHandler):
         if re.search(self.regex, text) is not None:
             conversation_data.context = SpreadsheetContext.GOLDCARD
 
+        ## allow for possibility of declaring contexts by prepending <gc> or <general>
+        tokenized_text = text.split()               #split tokens (if any)
+        if len(tokenized_text) > 0:                 #catch empty token list error
+            if tokenized_text[0].lower() == "<gc>":         #context: gold card
+                conversation_data.context = SpreadsheetContext.GOLDCARD
+            elif tokenized_text[0].lower() == "<general>":  #context: general
+                conversation_data.context = SpreadsheetContext.GENERAL
+            text = " ".join(tokenized_text[1:])
+        return text
+ 
     def _find_best_answer(self, question, context):
         assert context in self.questions_embeddings
 

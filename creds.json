@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "taiwan-bot-296315",
+  "private_key_id": "dc3dba2bffb2e422ad103e64656884cdcdadf5b4",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC2j0WfyIX08aAj\nAnehMAq9M28SABpNosKvN7NMDD575xJJQEdUo15WJCyOUqGIVqN7p7qxYgrgtgzT\ny9ckog+1emAgUkjWiKVXxB37iR1H0z5kygjeNMNf+Q0hkYMoxnDalQLm5bPyYfxS\nTMN/ByUDudsoPZALkQTBArosl5PewXfBzrxQ/Ws3q2XFfuYrwLe0ugc2hIcnLHVt\n6IiChNsvX18pixjpZ0l0UaPVRd5nBRRHqFtiBxyT078nEAOQbyIhctQeZdiH0XCw\nJKChnxJE+EPy/ncfCBz4k1ByBOTqGQVwc0FlSz7tMGsICHKrIyz9T38GP0pXgJC4\nIT1fjMY5AgMBAAECgf9rWOTtMesspZK3i+8QlMjvAKTXrI0gTNjYUV/pnBZVCWjI\nVJ1YwR4NAI27IpdQ6X7z4fE65VqzUFlLqJEd6E/c7ym5LQ/JnzrNlB4vY+hcU7jD\nAta8n30x4No+OEEr2vuSWR3kQXH08pgW3dlsLdhi4QjKOlfwuXeJoJlya/NUOwlE\nWX25T3oFVXgb7hGw/slALU3szE1tX0G2WIe9uWJpXQ5u07U7VO2wZ0g+vggKryP5\n5uOCx20rjB7fwHhIA2Hdlk73XaEWOPKZ8y/qWgXQHxUbYawd6vvknLyTMG1WvP7u\nzNgNsopwnkM33MwDUGpxl208ZgDCbEgJDCySAVkCgYEA7l+maqcQuedbqL0TR+01\nTqV9WchyPYFNcPRrgAMvyiSA0+jTWpbdWV2VmZU0W0sZfIFLsn58qsz94Z0gInzK\nXRZr/+koKMg1Yr7UT+OKjIeLVghLPJydKHPyhRxvmeKLDsgxuR5h/9y3r3IiwyYC\n+HguGqRfocfAyA5Ihg0xA08CgYEAxA8T+5nSnZcKFi+JPvkpxr4Cl7cjIkOP2kTg\n2A1MWZkhNMEHi+JYAdpr7tgs7p2JqtUkUMZm1oo5exffTv5qKQTX0pYp2oPF8ckD\nWn6xw9DoWHDTsF15aLViulmQahpvAo3Ys0ShQ12i2OM7mQ6S5DWHbEWZwOUwhaxZ\nJ04y2/cCgYBR8mwBikGDx3eJQMbaGUAUM2wua2xqnIME6+Hw9id9tKLdNtNB909N\nI5EEZXjEUcMHPGPLjxRIm4REBYJAmOnwqn6iUYNO0dUYh0Xx2OWOfiJ2hw9mXOji\nOUoMXMQ5ANqRUF1XqIxEK5qyI+izcePfi2E+I3gE4+jwXYitHOfWnQKBgEf8fUrR\nNOrV7UcuFwd/Nt6ZH5yTCpxnECeFSMUrRNBVEEMtaNbsuYGcsCqXRxAp2cVW0ymx\nX0sAn5BZuI1pjpMXCyNwLVflMEXRl6CfiieqydTHQIKuH4jZqLFhd0vt/rqCWIGh\n/lAczlEyRcyx9C9ElD+l4olX3ZQHLwjmhngLAoGBALXr/2I/zpU+C+z/AbIEwXx5\njOJX8gTEJNmzRJYqbh8tYjO0142Y9qmJwhgGysVtoUBw5E9Q0mP2YC0iTZ0fVkaC\nVeo6tXHgR9zHfOlSsl2FTqYiw0ZL48DCUzCVcb2oQLx3BPR9JbG+BC8D19SZ/3jW\nHwPsOCCau3oHSbuIKKH/\n-----END PRIVATE KEY-----\n",
+  "client_email": "taiwan-bot@taiwan-bot-296315.iam.gserviceaccount.com",
+  "client_id": "101237626114952673368",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/taiwan-bot%40taiwan-bot-296315.iam.gserviceaccount.com"
+}

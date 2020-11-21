@@ -78,9 +78,7 @@ class FAQBot(ActivityHandler):
         question = activity.text
         if question is not None:
             question = self._clean_question(question)
-
             question = self._detect_and_set_context(question, conversation_data)
- 
             best_answer, most_similar_question, score = self._find_best_answer(
                 question, conversation_data.context)
             if score < UNKNOWN_THRESHOLD:
@@ -142,9 +140,10 @@ class FAQBot(ActivityHandler):
         if len(tokenized_text) > 0:                 #catch empty token list error
             if tokenized_text[0].lower() == "<gc>":         #context: gold card
                 conversation_data.context = SpreadsheetContext.GOLDCARD
+                text = " ".join(tokenized_text[1:])
             elif tokenized_text[0].lower() == "<general>":  #context: general
                 conversation_data.context = SpreadsheetContext.GENERAL
-            text = " ".join(tokenized_text[1:])
+                text = " ".join(tokenized_text[1:])
         return text
  
     def _find_best_answer(self, question, context):

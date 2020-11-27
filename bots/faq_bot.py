@@ -7,12 +7,12 @@ from taiwan_bot_sheet import TaiwanBotSheet, SpreadsheetContext
 from botbuilder.adapters.slack import SlackRequestBody
 from botbuilder.core import ActivityHandler, TurnContext, ConversationState
 from .conversation_data import ConversationData
-from models.nlp_lite import UniversalSentenceEncoderLite
+from models.nlp import UniversalSentenceEncoder
 
 GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
-UNKNOWN_THRESHOLD = 0.5
+UNKNOWN_THRESHOLD = 0.6
 NON_TEXT_QUESTION_REPLY = "Sorry, I only understand English. Please try again."
 DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
 WELCOME_QUICK_REPLIES = ["Gold Card?",
@@ -29,7 +29,7 @@ class FAQBot(ActivityHandler):
             "ConversationData")
         self.regex = re.compile(GOLD_CARD_REGEX, re.IGNORECASE)
 
-        self.encoder_model = UniversalSentenceEncoderLite()
+        self.encoder_model = UniversalSentenceEncoder()
         self.questions = {}
         self.answers = {}
         self.questions_embeddings = {}

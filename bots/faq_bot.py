@@ -7,7 +7,7 @@ from taiwan_bot_sheet import TaiwanBotSheet, SpreadsheetContext
 from botbuilder.adapters.slack import SlackRequestBody
 from botbuilder.core import ActivityHandler, TurnContext, ConversationState
 from .conversation_data import ConversationData
-from models.nlp_lite import UniversalSentenceEncoderLite
+from models.nlp import UniversalSentenceEncoder
 
 GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
@@ -29,7 +29,7 @@ class FAQBot(ActivityHandler):
             "ConversationData")
         self.regex = re.compile(GOLD_CARD_REGEX, re.IGNORECASE)
 
-        self.encoder_model = UniversalSentenceEncoderLite()
+        self.encoder_model = UniversalSentenceEncoder()
         self.questions = {}
         self.answers = {}
         self.questions_embeddings = {}

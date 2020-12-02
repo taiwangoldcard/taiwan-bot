@@ -82,8 +82,12 @@ class FAQBot(ActivityHandler):
             best_answer, most_similar_question, score = self._find_best_answer(
                 question, conversation_data.context)
             if score < UNKNOWN_THRESHOLD:
-                best_answer = UNKNOWN_ANSWER
-
+                # Backoff to <general> context if no good answer found
+                best_answer, most_similar_question, score = self._find_best_answer(
+                question, SpreadsheetContext.GENERAL)
+                if score < UNKNOWN_THRESHOLD:
+                    best_answer = UNKNOWN_ANSWER
+                    
             self.bot_sheet.log_answers(
                 question, most_similar_question, best_answer, score, conversation_data.toJSON())
         else:

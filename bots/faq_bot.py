@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import re
 import numpy as np
+import json
 from tensorflow.python.ops.variables import _UNKNOWN
 
 from taiwan_bot_sheet import TaiwanBotSheet, SpreadsheetContext
@@ -79,21 +80,23 @@ class FAQBot(ActivityHandler):
         if question is not None:
             question = self._clean_question(question)
             question = self._detect_and_set_context(question, conversation_data)
-            best_answer, most_similar_question, score = self._find_best_answer(
+            best_answer, most_similar_question, score, alternate_qas = self._find_best_answer(
                 question, conversation_data.context)
             if score < UNKNOWN_THRESHOLD:
                 # Backoff to <general> context if no good answer found
-                best_answer, most_similar_question, score = self._find_best_answer(
+                best_answer, most_similar_question, score, alternate_qas = self._find_best_answer(
                 question, SpreadsheetContext.GENERAL)
                 if score < UNKNOWN_THRESHOLD:
                     best_answer = UNKNOWN_ANSWER
-                    
+
             self.bot_sheet.log_answers(
-                question, most_similar_question, best_answer, score, conversation_data.toJSON())
+                question, most_similar_question, best_answer, score, conversation_data.toJSON(),
+                json.dumps(alternate_qas))
         else:
             best_answer = NON_TEXT_QUESTION_REPLY
             self.bot_sheet.log_answers(
-                "non-text question", "N/A", best_answer, 0.0, conversation_data.toJSON())
+                "non-text question", "N/A", best_answer, 0.0, conversation_data.toJSON(),
+                json.dumps(alternate_qas))
 
         body = activity.channel_data
 
@@ -149,7 +152,7 @@ class FAQBot(ActivityHandler):
                 conversation_data.context = SpreadsheetContext.GENERAL
                 text = " ".join(tokenized_text[1:])
         return text
- 
+
     def _find_best_answer(self, question, context):
         assert context in self.questions_embeddings
 
@@ -160,8 +163,19 @@ class FAQBot(ActivityHandler):
         most_similar_question = self.questions[context][most_similar_id]
         best_answer = self.answers[context][most_similar_id]
         score = float(scores[most_similar_id])
+        alternate_qas = self._find_alternate_qas(scores, context)
 
-        return best_answer, most_similar_question, score
+        return best_answer, most_similar_question, score, alternate_qas
+
+    def _find_alternate_qas(self, scores, context):
+        flat_scores = [score_array[0] for score_array in scores.tolist()]
+        score_to_questions = dict(zip(flat_scores, self.questions[context]))
+        # Top 5
+        top_alternate_scores = np.flip(np.sort(scores, axis=None))[1:6]
+        def answer_for_score(score):
+            score_id = np.where(scores == score)[0][0]
+            return { "score": score.item(), "question": score_to_questions[score], "answer": self.answers[context][score_id] }
+        return [answer_for_score(score) for score in top_alternate_scores]
 
     def _copy_activity_details_to_conversation_data(self, activity, conversation_data):
         conversation_data.timestamp = activity.timestamp

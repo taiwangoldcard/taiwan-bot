@@ -171,7 +171,8 @@ class FAQBot(ActivityHandler):
         flat_scores = [score_array[0] for score_array in scores.tolist()]
         score_to_questions = dict(zip(flat_scores, self.questions[context]))
         # Top 5
-        top_alternate_scores = np.flip(np.sort(scores, axis=None))[1:6]
+        sorted_scores = np.flip(np.sort(scores, axis=None))
+        top_alternate_scores = sorted_scores[:5] if sorted_scores[0] < UNKNOWN_THRESHOLD else sorted_scores[1:6]
         def answer_for_score(score):
             score_id = np.where(scores == score)[0][0]
             return { "score": score.item(), "question": score_to_questions[score], "answer": self.answers[context][score_id] }

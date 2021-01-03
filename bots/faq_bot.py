@@ -14,7 +14,7 @@ GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
 UNKNOWN_ANSWER = "Sorry, I don't know the answer to that right now. Please leave a contact email and we will try to get get back to you with an answer"
 UNKNOWN_THRESHOLD = 0.6
-NON_TEXT_QUESTION_REPLY = "Sorry, I only understand English. Please try again."
+NON_TEXT_QUESTION_REPLY = "Sorry, I only understand written English. Please try again."
 DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
 WELCOME_QUICK_REPLIES = ["Gold Card?",
                          "How's the rent?", "Tax in Taiwan?"]
@@ -102,8 +102,7 @@ class FAQBot(ActivityHandler):
         else:
             best_answer = NON_TEXT_QUESTION_REPLY
             self.bot_sheet.log_answers(
-                "non-text question", "N/A", best_answer, 0.0, conversation_data.toJSON(),
-                json.dumps(alternate_qas))
+                "non-text question", "N/A", best_answer, 0.0, conversation_data.toJSON())
 
         body = activity.channel_data
 
@@ -142,7 +141,7 @@ class FAQBot(ActivityHandler):
     # Checks if the question needs to be answered. For e.g., if the user responds with their email, they probably
     # are just giving us contact info, not asking for an answer
     def _does_not_warrant_answer(self, text: str):
-        email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+        email_regex = '[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}'
         if re.search(email_regex, text):
             return True
 

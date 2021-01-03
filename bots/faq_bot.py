@@ -12,7 +12,7 @@ from models.nlp import UniversalSentenceEncoder
 
 GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
-UNKNOWN_ANSWER = "Sorry, I can't help with that yet. Try to ask another question!"
+UNKNOWN_ANSWER = "Sorry, I don't know the answer to that right now. Please leave a contact email and we will try to get get back to you with an answer"
 UNKNOWN_THRESHOLD = 0.6
 NON_TEXT_QUESTION_REPLY = "Sorry, I only understand English. Please try again."
 DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"
@@ -79,6 +79,13 @@ class FAQBot(ActivityHandler):
         question = activity.text
         if question is not None:
             question = self._clean_question(question)
+
+            # Do not respond if the question does not warrant an answer
+            if self._does_not_warrant_answer(question):
+                self.bot_sheet.log_answers(
+                    question, "question does not warrant answer", "N/A", 0.0, conversation_data.toJSON())
+                return
+
             question = self._detect_and_set_context(question, conversation_data)
             best_answer, most_similar_question, score, alternate_qas = self._find_best_answer(
                 question, conversation_data.context)
@@ -131,6 +138,15 @@ class FAQBot(ActivityHandler):
     def _clean_question(self, text: str):
         clean_text = text.replace("@taiwan-bot", "")
         return clean_text
+
+    # Checks if the question needs to be answered. For e.g., if the user responds with their email, they probably
+    # are just giving us contact info, not asking for an answer
+    def _does_not_warrant_answer(self, text: str):
+        email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+        if re.search(email_regex, text):
+            return True
+
+        return False
 
     def _detect_and_set_context(self, text: str, conversation_data):
         if conversation_data.timestamp is not None:

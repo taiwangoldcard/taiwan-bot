@@ -75,7 +75,7 @@ class TaiwanBotSheet:
 
         return [questions, answers]
 
-    def log_answers(self, user_question, similar_question, answer, score, state, alternative_questions):
+    def log_answers(self, user_question, similar_question, answer, score, state, alternative_questions = ""):
         sheet = self.client.open(SPREADSHEET_LOG_FILE).worksheet(CONTEXTS[self.context]["sheet"])
         next_row = len(sheet.get_all_values()) + 1
         sheet.update( 'A' + str(next_row) , datetime.now().strftime("%d/%m/%Y %H:%M:%S"))

@@ -12,7 +12,7 @@ from models.nlp import UniversalSentenceEncoder
 
 GOLD_CARD_REGEX = "gold card"
 SESSION_TIMEOUT_SECONDS = 300
-UNKNOWN_ANSWER = "Sorry, I don't know the answer to that right now. Please leave a contact email and we will try to get get back to you with an answer"
+UNKNOWN_ANSWER = "Sorry, I don't know the answer to that right now. Try to reach the \"Taiwan Employment Gold Card Office\": help@taiwangoldcard.tw"
 UNKNOWN_THRESHOLD = 0.6
 NON_TEXT_QUESTION_REPLY = "Sorry, I only understand written English. Please try again."
 DEFAULT_WELCOME_MESSAGE = "Greetings! You may ask me anything about taiwan and I'll do my best to answer your questions 🧙 For starters, you may select a question from below 👇"

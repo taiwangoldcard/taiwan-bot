@@ -2,8 +2,9 @@
 
 A chatbot to answer all your questions about [Taiwan Gold Card](https://taiwangoldcard.com/) and many more!
 - [Jonathan](https://jonathanbgn.com) built the NLP model using [NLU (natural language understanding)](https://blog.tensorflow.org/2020/08/introducing-semantic-reactor-explore-nlp-sheets.html) with Tensorflow. Here [an overview of how it works](https://jonathanbgn.com/nlp/2020/09/29/chatbot-universal-sentence-encoder.html).
-- [Shawn](https://www.linkedin.com/in/shawn-lim-0a307550) the infrastructure
+- [Shawn](https://www.linkedin.com/in/geekyme/) the infrastructure
 - [Eric](https://twitter.com/eric_khun) connected the data
+- [John](https://www.linkedin.com/in/johncliu) sysadmin and platform hosting
 
 
 ## Add me on Facebook Messenger
